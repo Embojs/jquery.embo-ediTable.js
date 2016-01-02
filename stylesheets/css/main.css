@@ -1,0 +1,19 @@
+input.editable {
+	border:1px solid #fff;
+}
+tr.edit>td>input.editable {
+	border:1px solid #ccc;
+}
+tr>td>.btn-deleteMainRow{ display:none; color:red; cursor:pointer; font-size:16px; padding:4px;}
+tr.new-row.edit .btn-deleteMainRow{ display:table-cell;}
+
+tr>td>.btn-deleteSubRow{ display:none; color:red; cursor:pointer; font-size:16px; padding:4px;}
+tr.new-row.edit .btn-deleteSubRow{ display:table-cell;}
+
+tr>td>.btn-editRow{display:table-cell; cursor:pointer; font-size:16px; padding:4px;}
+tr.edit>td>.btn-editRow{display:none;}
+
+tr>td>.btn-editRowDone{display:none; cursor:pointer; font-size:16px; padding:4px;}
+tr.edit>td>.btn-editRowDone{display:table-cell;}
+
+.dataTable tr td{border-bottom:1px solid #ececec; }
