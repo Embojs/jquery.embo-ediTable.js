@@ -4,7 +4,7 @@
 			Error : "Something went wrong :"
 		},
 		Inputs : {
-			Text : '<input type="text" value="{{value}}"/>'
+			Text : '<input type="text" {{attrs}} />'
 		},
 		ShowLog : true,
 		completed: function (){
@@ -24,6 +24,16 @@
 		replace: function(key, value, template){
 			var keyString = '{{'+ key +'}}';
 			return template.replace(keyString, value);
+		},
+		addAttrs: function (attrs, template) {
+			var keyString = '{{attrs}}';
+			var attrString = "";
+			
+			row = "";
+			$.each(attrs, function(key, value){
+				attrString += key + "='" + value + "' ";
+			});
+			return template.replace(keyString, attrString);
 		}
 	}
 	/*
@@ -32,11 +42,14 @@
 	*/
     $.fn.emboEdiTable = function(options) {
 		var settings = $.extend({
-			   actionColIndex : -1,
-			   editableCols: -1,
-			   completed: EmboCore.completed,
-			   failed: EmboCore.failed,
-			   ended: EmboCore.ended
+				actionColIndex : -1,
+				editableCols: -1,
+				attrs : {},
+				idSuffix: true,
+				nameSuffix: true,
+				completed: EmboCore.completed,
+				failed: EmboCore.failed,
+				ended: EmboCore.ended
 		   }, options);
 		return this.each(function(){
 			try{
@@ -45,7 +58,8 @@
 				// add action column
 				
 				//turn all editable columns to input box
-				$(table).find('tbody').find('tr').each(function (){
+				var rowIndex = 0;
+				$(table).find('tr').each(function (){
 					var colIndex = 0;
 					$(this).find('td').each(function (){
 						var editable = true;
@@ -64,11 +78,41 @@
 						if (editable)
 						{
 							var value = $(this).html();
-							var inputHtml = EmboCore.replace("value", value, EmboCore.Inputs.Text);
+							//Get attrs from setting and to add to input
+							var attrs;
+							if (settings.attrs[colIndex])
+							{
+								
+								attrs = $.extend({
+									value : value, 
+									name: rowIndex + "_" + colIndex,
+									id: rowIndex + "_" + colIndex,
+									class: ""
+								}, settings.attrs[colIndex]);
+								
+								if (settings.idSuffix)
+								{
+									attrs.id += "_" + rowIndex;
+								}
+								if (settings.nameSuffix)
+								{
+									attrs.name += "_" + rowIndex;
+								}
+							}else
+							{
+								attrs = {
+									value : value, 
+									name: rowIndex + "_" + colIndex,
+									id: rowIndex + "_" + colIndex
+								}
+							}
+							
+							var inputHtml = EmboCore.addAttrs(attrs, EmboCore.Inputs.Text); //EmboCore.replace("value", value, EmboCore.Inputs.Text);
 							$(this).html(inputHtml);
 						}
 						colIndex += 1;
 					});
+					rowIndex += 1;
 				});
 				if ($.isFunction(settings.completed)) {
 					settings.completed.call(this);
