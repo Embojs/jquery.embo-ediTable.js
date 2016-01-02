@@ -2,7 +2,7 @@
 $(document).ready(function(){
   
 	$('#myTable').emboEdiTable({
-		//editableCols:[1]
+		editableCols:[2],
 		actionColIndex:0
 	});
 });
