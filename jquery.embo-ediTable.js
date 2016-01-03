@@ -4,7 +4,8 @@
 			Error : "Something went wrong :"
 		},
 		Inputs : {
-			Text : '<input type="text" {{attrs}} />'
+			Text : '<input type="text" {{attrs}} />',
+			Link: '<a {{attrs}}>{{text}}</a>'
 		},
 		ShowLog : true,
 		completed: function (){
@@ -34,6 +35,9 @@
 				attrString += key + "='" + value + "' ";
 			});
 			return template.replace(keyString, attrString);
+		}, 
+		getActionButtons : function (){
+			
 		}
 	}
 	/*
@@ -42,11 +46,17 @@
 	*/
     $.fn.emboEdiTable = function(options) {
 		var settings = $.extend({
-				actionColIndex : -1,
 				editableCols: -1,
 				attrs : {},
 				idSuffix: true,
 				nameSuffix: true,
+				actionColIndex : -1,
+				actions : {
+					add : "Add new row", 
+					edit: "Edit",
+					done: "Done",
+					delete: "Delete"
+					},
 				completed: EmboCore.completed,
 				failed: EmboCore.failed,
 				ended: EmboCore.ended
@@ -55,7 +65,7 @@
 			try{
 				var table = this;
 				
-				// add action column
+				// add  button
 				
 				//turn all editable columns to input box
 				var rowIndex = 0;
@@ -66,6 +76,41 @@
 						if (colIndex == settings.actionColIndex)
 						{
 							editable = false;
+							var attrs;
+							var actionHtml = "";
+							if (settings.actions.edit)
+							{
+								attrs = {
+									id: "edit_row_" + rowIndex,
+									class: "btn-editRow"
+								};
+								var button = EmboCore.addAttrs(attrs, EmboCore.Inputs.Link);
+								button = EmboCore.replace("text", settings.actions.edit, button);
+								actionHtml += button;
+							}
+							
+							if (settings.actions.delete)
+							{
+								attrs = {
+									id: "delete_row_" + rowIndex,
+									class: "btn-deleteRow"
+								};
+								var button = EmboCore.addAttrs(attrs, EmboCore.Inputs.Link);
+								button = EmboCore.replace("text", settings.actions.delete, button);
+								actionHtml += button;
+							}
+							
+							if (settings.actions.done)
+							{
+								attrs = {
+									id: "done_row_" + rowIndex,
+									class: "btn-editRowDone"
+								};
+								var button = EmboCore.addAttrs(attrs, EmboCore.Inputs.Link);
+								button = EmboCore.replace("text", settings.actions.delete, button);
+								actionHtml += button;
+							}
+							$(this).html(actionHtml);
 						}
 						if (typeof settings.editableCols == 'object') 
 						{
@@ -90,6 +135,7 @@
 									class: ""
 								}, settings.attrs[colIndex]);
 								
+								//Suffix
 								if (settings.idSuffix)
 								{
 									attrs.id += "_" + rowIndex;
